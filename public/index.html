@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Send a Little Note ✉️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #fdf6ec;
+      --warm: #f5e6d0;
+      --blush: #e8a598;
+      --rose:  #c0615a;
+      --ink:   #2c1a1a;
+      --muted: #8a6a6a;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--cream);
+      background-image:
+        radial-gradient(ellipse at 20% 10%, #f7d4ca55 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 90%, #e8c5b055 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='%23c0615a' opacity='0.06'/%3E%3C/svg%3E");
+      font-family: 'Lato', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 2px;
+      max-width: 480px;
+      width: 100%;
+      padding: 3rem 3rem 2.5rem;
+      box-shadow:
+        0 2px 4px rgba(44,26,26,0.06),
+        0 12px 40px rgba(44,26,26,0.10),
+        6px 6px 0 var(--warm);
+      position: relative;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Decorative stamp in corner */
+    .stamp {
+      position: absolute;
+      top: 1.4rem;
+      right: 1.6rem;
+      width: 48px;
+      height: 48px;
+      border: 2.5px solid var(--blush);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: var(--blush);
+      opacity: 0.7;
+    }
+
+    /* Wax seal line */
+    .seal-line {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.8rem;
+    }
+    .seal-line::before,
+    .seal-line::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--warm);
+    }
+    .seal {
+      font-size: 1.3rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 0.4rem;
+    }
+    h1 em {
+      color: var(--rose);
+      font-style: italic;
+    }
+
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    textarea {
+      width: 100%;
+      border: 1.5px solid var(--warm);
+      border-radius: 2px;
+      padding: 1rem 1.1rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--ink);
+      background: var(--cream);
+      resize: none;
+      height: 140px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      line-height: 1.7;
+    }
+    textarea::placeholder { color: #c4a8a0; font-style: italic; }
+    textarea:focus {
+      border-color: var(--blush);
+      box-shadow: 0 0 0 3px rgba(224,165,152,0.15);
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      margin-bottom: 1.5rem;
+      transition: color 0.2s;
+    }
+    .char-count.over { color: var(--rose); }
+
+    button {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--rose);
+      color: white;
+      border: none;
+      border-radius: 2px;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    button:hover:not(:disabled) {
+      background: #a84e48;
+      box-shadow: 0 4px 16px rgba(192,97,90,0.35);
+      transform: translateY(-1px);
+    }
+    button:active:not(:disabled) { transform: translateY(0); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Ripple */
+    button .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: scale(0);
+      animation: ripple 0.5s linear;
+      pointer-events: none;
+    }
+    @keyframes ripple {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* Toast */
+    .toast {
+      margin-top: 1.1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 2px;
+      font-size: 0.82rem;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #f0faf0; color: #3a7a3a; border: 1px solid #b8e0b8; }
+    .toast.error   { background: #fdf0f0; color: var(--rose); border: 1px solid #f0c8c5; }
+
+    /* Footer */
+    .footer {
+      margin-top: 2rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--warm);
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .footer span { color: var(--rose); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="stamp">✉</div>
+
+    <div class="seal-line"><span class="seal">❦</span></div>
+
+    <h1>Send a <em>little note</em></h1>
+    <p class="subtitle">It'll print just for you</p>
+
+    <label for="msg">Your message</label>
+    <textarea
+      id="msg"
+      maxlength="200"
+      placeholder="Write something sweet…"
+    ></textarea>
+    <div class="char-count" id="count">0 / 200</div>
+
+    <button id="sendBtn" onclick="sendMessage(event)">
+      Send Note &nbsp;→
+    </button>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="footer">
+      Printed with <span>♥</span> just for you
+    </div>
+  </div>
+
+  <script>
+    // ← CHANGE THIS to your server address
+    const SERVER_URL = 'http://YOUR_SERVER_ADDRESS:3000';
+
+    const textarea = document.getElementById('msg');
+    const countEl  = document.getElementById('count');
+    const toast    = document.getElementById('toast');
+
+    textarea.addEventListener('input', () => {
+      const len = textarea.value.length;
+      countEl.textContent = `${len} / 200`;
+      countEl.classList.toggle('over', len > 180);
+    });
+
+    function showToast(msg, type) {
+      toast.textContent = msg;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    function addRipple(e, btn) {
+      const rect = btn.getBoundingClientRect();
+      const r = document.createElement('span');
+      r.className = 'ripple';
+      const size = Math.max(rect.width, rect.height);
+      r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+      btn.appendChild(r);
+      setTimeout(() => r.remove(), 500);
+    }
+
+    async function sendMessage(e) {
+      const btn = document.getElementById('sendBtn');
+      const msg = textarea.value.trim();
+
+      if (!msg) { showToast('Write something first! ✏️', 'error'); return; }
+
+      addRipple(e, btn);
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch(`${SERVER_URL}/send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: msg })
+        });
+
+        if (!res.ok) throw new Error();
+
+        showToast('✓ Your note is on its way! 🖨️', 'success');
+        textarea.value = '';
+        countEl.textContent = '0 / 200';
+      } catch {
+        showToast('Couldn\'t send — is the printer online? 💔', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send Note  →';
+      }
+    }
+  </script>
+</body>
+</html>
